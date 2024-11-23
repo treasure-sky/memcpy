@@ -22,7 +22,7 @@ int alloc_SRC_and_DEST(char **SRC, char **DEST, size_t file_size)
     *SRC = malloc(file_size);
     if (*SRC == NULL)
     {
-        perror("SRC malloc 실패");
+        perror("malloc error: SRC");
         ret = -1;
         return ret;
     }
@@ -30,8 +30,8 @@ int alloc_SRC_and_DEST(char **SRC, char **DEST, size_t file_size)
     *DEST = malloc(file_size);
     if (*DEST == NULL)
     {
-        perror("DEST malloc 실패");
-        free(*SRC); // SRC는 이미 할당된 상태이므로 이를 해제해줌.
+        perror("malloc error: DEST");
+        free(*SRC); // SRC는 이미 할당된 상태이므로 이를 해제해줌
         ret = -1;
         return ret;
     }
@@ -41,17 +41,30 @@ int alloc_SRC_and_DEST(char **SRC, char **DEST, size_t file_size)
 
 size_t getSize(int fd)
 {
-    size_t file_size = 0;
-
-    struct stat st;
-    if (fstat(fd, &st) == -1)
+    // 현재 파일 포인터 저장
+    off_t now_p = lseek(fd, 0, SEEK_CUR);
+    if (now_p == -1)
     {
-        perror("fstat 실패");
+        perror("lseek error: now_p");
         return -1;
     }
 
-    file_size = (size_t)st.st_size;
-    return file_size;
+    // 파일 포인터 끝으로 이동해서 크기 얻기
+    off_t file_size = lseek(fd, 0, SEEK_END);
+    if (file_size == -1)
+    {
+        perror("lseek error: file_size");
+        return -1;
+    }
+
+    // 파일 포인터를 기존 위치로 백업
+    if (lseek(fd, 0, SEEK_SET) == -1)
+    {
+        perror("lseek error: backup");
+        return -1;
+    }
+
+    return (size_t)file_size;
 }
 
 void movs_memcpy(char *DEST, char *SRC, size_t size)
