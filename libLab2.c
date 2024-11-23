@@ -86,9 +86,11 @@ size_t getSize(int fd)
 
 void movs_memcpy(char *DEST, char *SRC, size_t size)
 {
-    /*
-     *  write your code
-     */
+    __asm__ __volatile__(
+        "rep movsb"
+        : "=D"(DEST), "=S"(SRC), "=c"(size)
+        : "r"(DEST), "r"(SRC), "r"(size)
+        : "memory");
 }
 
 void custom_memcpy(char *DEST, char *SRC, size_t size)
