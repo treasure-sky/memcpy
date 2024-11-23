@@ -88,8 +88,8 @@ void movs_memcpy(char *DEST, char *SRC, size_t size)
 {
     __asm__ __volatile__(
         "rep movsb"
-        : "=D"(DEST), "=S"(SRC), "=c"(size)
-        : "r"(DEST), "r"(SRC), "r"(size)
+        :
+        : "D"(DEST), "S"(SRC), "c"(size)
         : "memory");
 }
 
