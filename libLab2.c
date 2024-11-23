@@ -10,10 +10,10 @@
 
 void old_memcpy(char* DEST, char* SRC, size_t size)
 {
-  char *d = DEST;
-  const char *s = SRC;
-  while (size--)
-    *d++ = *s++;
+    char *d = DEST;
+    const char *s = SRC;
+    while (size--)
+        *d++ = *s++;
 }
 
 
