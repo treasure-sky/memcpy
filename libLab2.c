@@ -49,12 +49,29 @@ size_t getSize(int fd)
         return -1;
     }
 
-    // 파일 포인터 끝으로 이동해서 크기 얻기
-    off_t file_size = lseek(fd, 0, SEEK_END);
-    if (file_size == -1)
+    // 파일 포인터 맨 앞으로 이동
+    if (lseek(fd, 0, SEEK_SET) == -1)
     {
-        perror("lseek error(file_size)");
+        perror("lseek error(file_pointer to start)");
         return -1;
+    }
+
+    // 512바이트씩 읽어가며 파일사이즈 계산
+    char buffer[512];
+    size_t bytesRead;
+    size_t file_size = 0;
+
+    while (1)
+    {
+        bytesRead = read(fd, buffer, 512);
+        if (bytesRead > 0)
+        {
+            file_size += bytesRead;
+        }
+        else
+        {
+            break;
+        }
     }
 
     // 파일 포인터를 기존 위치로 백업
