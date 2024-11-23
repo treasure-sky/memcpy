@@ -22,7 +22,7 @@ int alloc_SRC_and_DEST(char **SRC, char **DEST, size_t file_size)
     *SRC = malloc(file_size);
     if (*SRC == NULL)
     {
-        perror("malloc error: SRC");
+        perror("malloc error(SRC)");
         ret = -1;
         return ret;
     }
@@ -30,7 +30,7 @@ int alloc_SRC_and_DEST(char **SRC, char **DEST, size_t file_size)
     *DEST = malloc(file_size);
     if (*DEST == NULL)
     {
-        perror("malloc error: DEST");
+        perror("malloc error(DEST)");
         free(*SRC); // SRC는 이미 할당된 상태이므로 이를 해제해줌
         ret = -1;
         return ret;
@@ -45,7 +45,7 @@ size_t getSize(int fd)
     off_t now_p = lseek(fd, 0, SEEK_CUR);
     if (now_p == -1)
     {
-        perror("lseek error: now_p");
+        perror("lseek error(now_p)");
         return -1;
     }
 
@@ -53,14 +53,14 @@ size_t getSize(int fd)
     off_t file_size = lseek(fd, 0, SEEK_END);
     if (file_size == -1)
     {
-        perror("lseek error: file_size");
+        perror("lseek error(file_size)");
         return -1;
     }
 
     // 파일 포인터를 기존 위치로 백업
     if (lseek(fd, 0, SEEK_SET) == -1)
     {
-        perror("lseek error: backup");
+        perror("lseek error(backup)");
         return -1;
     }
 
