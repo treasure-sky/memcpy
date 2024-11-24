@@ -97,7 +97,26 @@ void movs_memcpy(char *DEST, char *SRC, size_t size)
 
 __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t size)
 {
-    // AVX2 명령어를 사용하여 32바이트 단위로 복사
+    // loop unrolling을 통해 128바이트 단위로 복사
+    while (size >= 128)
+    {
+        // AVX2 명령어를 사용
+        __m256i data0 = _mm256_load_si256((__m256i *)(SRC));
+        __m256i data1 = _mm256_load_si256((__m256i *)(SRC + 32));
+        __m256i data2 = _mm256_load_si256((__m256i *)(SRC + 64));
+        __m256i data3 = _mm256_load_si256((__m256i *)(SRC + 96));
+
+        _mm256_store_si256((__m256i *)(DEST), data0);
+        _mm256_store_si256((__m256i *)(DEST + 32), data1);
+        _mm256_store_si256((__m256i *)(DEST + 64), data2);
+        _mm256_store_si256((__m256i *)(DEST + 96), data3);
+
+        DEST += 128;
+        SRC += 128;
+        size -= 128;
+    }
+
+    // 128바이트 보다 작은 나머지를 32바이트 단위로 복사
     while (size >= 32)
     {
         __m256i data = _mm256_load_si256((__m256i *)SRC);
@@ -108,7 +127,7 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
         size -= 32;
     }
 
-    // 남은 데이터를 1바이트씩 복사
+    // 남은 모든 데이터를 1바이트씩 복사
     while (size > 0)
     {
         *DEST = *SRC;
