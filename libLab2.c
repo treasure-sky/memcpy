@@ -101,6 +101,7 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
     // 256바이트 단위로 복사
     while (size >= 256)
     {
+        // AVX2 명령 사용
         __m256i data0 = _mm256_load_si256((__m256i *)(SRC));
         __m256i data1 = _mm256_load_si256((__m256i *)(SRC + 32));
         __m256i data2 = _mm256_load_si256((__m256i *)(SRC + 64));
