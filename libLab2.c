@@ -95,7 +95,7 @@ void movs_memcpy(char *DEST, char *SRC, size_t size)
         : "memory");
 }
 
-void custom_memcpy(char *DEST, char *SRC, size_t size)
+__attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t size)
 {
     // AVX2 명령어를 사용하여 32바이트 단위로 복사
     while (size >= 32)
