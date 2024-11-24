@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <immintrin.h>
 
 void old_memcpy(char *DEST, char *SRC, size_t size)
 {
@@ -96,7 +97,23 @@ void movs_memcpy(char *DEST, char *SRC, size_t size)
 
 void custom_memcpy(char *DEST, char *SRC, size_t size)
 {
-    /*
-     *  write your code
-     */
+    // AVX2 명령어를 사용하여 32바이트 단위로 복사
+    while (size >= 32)
+    {
+        __m256i data = _mm256_load_si256((__m256i *)SRC);
+        _mm256_store_si256((__m256i *)DEST, data);
+
+        DEST += 32;
+        SRC += 32;
+        size -= 32;
+    }
+
+    // 남은 데이터를 1바이트씩 복사
+    while (size > 0)
+    {
+        *DEST = *SRC;
+        DEST++;
+        SRC++;
+        size--;
+    }
 }
