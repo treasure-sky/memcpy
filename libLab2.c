@@ -98,49 +98,6 @@ void movs_memcpy(char *DEST, char *SRC, size_t size)
 __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t size)
 {
     // loop unrolling사용
-    // 512바이트 단위로 복사
-    while (size >= 512)
-    {
-        // AVX2 명령어를 사용
-        __m256i data0 = _mm256_load_si256((__m256i *)(SRC));
-        __m256i data1 = _mm256_load_si256((__m256i *)(SRC + 32));
-        __m256i data2 = _mm256_load_si256((__m256i *)(SRC + 64));
-        __m256i data3 = _mm256_load_si256((__m256i *)(SRC + 96));
-        __m256i data4 = _mm256_load_si256((__m256i *)(SRC + 128));
-        __m256i data5 = _mm256_load_si256((__m256i *)(SRC + 160));
-        __m256i data6 = _mm256_load_si256((__m256i *)(SRC + 192));
-        __m256i data7 = _mm256_load_si256((__m256i *)(SRC + 224));
-        __m256i data8 = _mm256_load_si256((__m256i *)(SRC + 256));
-        __m256i data9 = _mm256_load_si256((__m256i *)(SRC + 288));
-        __m256i data10 = _mm256_load_si256((__m256i *)(SRC + 320));
-        __m256i data11 = _mm256_load_si256((__m256i *)(SRC + 352));
-        __m256i data12 = _mm256_load_si256((__m256i *)(SRC + 384));
-        __m256i data13 = _mm256_load_si256((__m256i *)(SRC + 416));
-        __m256i data14 = _mm256_load_si256((__m256i *)(SRC + 448));
-        __m256i data15 = _mm256_load_si256((__m256i *)(SRC + 480));
-
-        _mm256_store_si256((__m256i *)(DEST), data0);
-        _mm256_store_si256((__m256i *)(DEST + 32), data1);
-        _mm256_store_si256((__m256i *)(DEST + 64), data2);
-        _mm256_store_si256((__m256i *)(DEST + 96), data3);
-        _mm256_store_si256((__m256i *)(DEST + 128), data4);
-        _mm256_store_si256((__m256i *)(DEST + 160), data5);
-        _mm256_store_si256((__m256i *)(DEST + 192), data6);
-        _mm256_store_si256((__m256i *)(DEST + 224), data7);
-        _mm256_store_si256((__m256i *)(DEST + 256), data8);
-        _mm256_store_si256((__m256i *)(DEST + 288), data9);
-        _mm256_store_si256((__m256i *)(DEST + 320), data10);
-        _mm256_store_si256((__m256i *)(DEST + 352), data11);
-        _mm256_store_si256((__m256i *)(DEST + 384), data12);
-        _mm256_store_si256((__m256i *)(DEST + 416), data13);
-        _mm256_store_si256((__m256i *)(DEST + 448), data14);
-        _mm256_store_si256((__m256i *)(DEST + 480), data15);
-
-        DEST += 256;
-        SRC += 256;
-        size -= 256;
-    }
-
     // 256바이트 단위로 복사
     while (size >= 256)
     {
@@ -153,14 +110,14 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
         __m256i data6 = _mm256_load_si256((__m256i *)(SRC + 192));
         __m256i data7 = _mm256_load_si256((__m256i *)(SRC + 224));
 
-        _mm256_stream_si256((__m256i *)(DEST), data0);
-        _mm256_stream_si256((__m256i *)(DEST + 32), data1);
-        _mm256_stream_si256((__m256i *)(DEST + 64), data2);
-        _mm256_stream_si256((__m256i *)(DEST + 96), data3);
-        _mm256_stream_si256((__m256i *)(DEST + 128), data4);
-        _mm256_stream_si256((__m256i *)(DEST + 160), data5);
-        _mm256_stream_si256((__m256i *)(DEST + 192), data6);
-        _mm256_stream_si256((__m256i *)(DEST + 224), data7);
+        _mm256_store_si256((__m256i *)(DEST), data0);
+        _mm256_store_si256((__m256i *)(DEST + 32), data1);
+        _mm256_store_si256((__m256i *)(DEST + 64), data2);
+        _mm256_store_si256((__m256i *)(DEST + 96), data3);
+        _mm256_store_si256((__m256i *)(DEST + 128), data4);
+        _mm256_store_si256((__m256i *)(DEST + 160), data5);
+        _mm256_store_si256((__m256i *)(DEST + 192), data6);
+        _mm256_store_si256((__m256i *)(DEST + 224), data7);
 
         DEST += 256;
         SRC += 256;
@@ -175,10 +132,10 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
         __m256i data2 = _mm256_load_si256((__m256i *)(SRC + 64));
         __m256i data3 = _mm256_load_si256((__m256i *)(SRC + 96));
 
-        _mm256_stream_si256((__m256i *)(DEST), data0);
-        _mm256_stream_si256((__m256i *)(DEST + 32), data1);
-        _mm256_stream_si256((__m256i *)(DEST + 64), data2);
-        _mm256_stream_si256((__m256i *)(DEST + 96), data3);
+        _mm256_store_si256((__m256i *)(DEST), data0);
+        _mm256_store_si256((__m256i *)(DEST + 32), data1);
+        _mm256_store_si256((__m256i *)(DEST + 64), data2);
+        _mm256_store_si256((__m256i *)(DEST + 96), data3);
 
         DEST += 128;
         SRC += 128;
@@ -191,8 +148,8 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
         __m256i data0 = _mm256_load_si256((__m256i *)(SRC));
         __m256i data1 = _mm256_load_si256((__m256i *)(SRC + 32));
 
-        _mm256_stream_si256((__m256i *)(DEST), data0);
-        _mm256_stream_si256((__m256i *)(DEST + 32), data1);
+        _mm256_store_si256((__m256i *)(DEST), data0);
+        _mm256_store_si256((__m256i *)(DEST + 32), data1);
 
         DEST += 64;
         SRC += 64;
@@ -203,7 +160,7 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
     while (size >= 32)
     {
         __m256i data = _mm256_load_si256((__m256i *)SRC);
-        _mm256_stream_si256((__m256i *)DEST, data);
+        _mm256_store_si256((__m256i *)DEST, data);
 
         DEST += 32;
         SRC += 32;
@@ -218,5 +175,4 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
         SRC++;
         size--;
     }
-    _mm_sfence();
 }
