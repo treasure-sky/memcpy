@@ -97,14 +97,35 @@ void movs_memcpy(char *DEST, char *SRC, size_t size)
 
 __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t size)
 {
-    // loop unrolling을 통해 128바이트 단위로 복사
+    // loop unrolling을 통해 256바이트 단위로 복사
+    while (size >= 256)
+    {
+        // AVX2 명령어를 사용
+        __m256i data0 = _mm256_load_si256((__m256i *)(SRC));
+        __m256i data1 = _mm256_load_si256((__m256i *)(SRC + 32));
+        __m256i data2 = _mm256_load_si256((__m256i *)(SRC + 64));
+        __m256i data3 = _mm256_load_si256((__m256i *)(SRC + 96));
+        __m256i data4 = _mm256_load_si256((__m256i *)(SRC + 128));
+        __m256i data5 = _mm256_load_si256((__m256i *)(SRC + 160));
+        __m256i data6 = _mm256_load_si256((__m256i *)(SRC + 192));
+        __m256i data7 = _mm256_load_si256((__m256i *)(SRC + 224));
+
+        _mm256_store_si256((__m256i *)(DEST), data0);
+        _mm256_store_si256((__m256i *)(DEST + 32), data1);
+        _mm256_store_si256((__m256i *)(DEST + 64), data2);
+        _mm256_store_si256((__m256i *)(DEST + 96), data3);
+        _mm256_store_si256((__m256i *)(DEST + 128), data4);
+        _mm256_store_si256((__m256i *)(DEST + 160), data5);
+        _mm256_store_si256((__m256i *)(DEST + 192), data6);
+        _mm256_store_si256((__m256i *)(DEST + 224), data7);
+
+        DEST += 256;
+        SRC += 256;
+        size -= 256;
+    }
+
     while (size >= 128)
     {
-        // 다음 데이터를 prefetch
-        _mm_prefetch((const char *)(SRC + 128), _MM_HINT_T0);
-        _mm_prefetch((const char *)(DEST + 128), _MM_HINT_T0);
-
-        // AVX2 명령어를 사용
         __m256i data0 = _mm256_load_si256((__m256i *)(SRC));
         __m256i data1 = _mm256_load_si256((__m256i *)(SRC + 32));
         __m256i data2 = _mm256_load_si256((__m256i *)(SRC + 64));
@@ -120,13 +141,21 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
         size -= 128;
     }
 
-    // 128바이트 보다 작은 나머지를 32바이트 단위로 복사
+    while (size >= 64)
+    {
+        __m256i data0 = _mm256_load_si256((__m256i *)(SRC));
+        __m256i data1 = _mm256_load_si256((__m256i *)(SRC + 32));
+
+        _mm256_store_si256((__m256i *)(DEST), data0);
+        _mm256_store_si256((__m256i *)(DEST + 32), data1);
+
+        DEST += 64;
+        SRC += 64;
+        size -= 64;
+    }
+
     while (size >= 32)
     {
-        // 다음 데이터를 prefetch
-        _mm_prefetch((const char *)(SRC + 32), _MM_HINT_T0);
-        _mm_prefetch((const char *)(DEST + 32), _MM_HINT_T0);
-
         __m256i data = _mm256_load_si256((__m256i *)SRC);
         _mm256_store_si256((__m256i *)DEST, data);
 
