@@ -172,5 +172,5 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
         SRC++;
         size--;
     }
-    _mm256_sfence();
+    _mm_sfence();
 }
