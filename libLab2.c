@@ -167,6 +167,19 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
         size -= 32;
     }
 
+    // 4바이트 단위로 복사
+    while (size >= 4)
+    {
+        *DEST = *SRC;
+        *(DEST + 1) = *(SRC + 1);
+        *(DEST + 2) = *(SRC + 2);
+        *(DEST + 3) = *(SRC + 3);
+
+        DEST += 4;
+        SRC += 4;
+        size -= 4;
+    }
+
     // 남은 모든 데이터를 1바이트 단위로 복사
     while (size > 0)
     {
