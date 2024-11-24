@@ -100,6 +100,10 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
     // loop unrolling을 통해 128바이트 단위로 복사
     while (size >= 128)
     {
+        // 다음 데이터를 prefetch
+        _mm_prefetch((const char *)(SRC + 128), _MM_HINT_T0);
+        _mm_prefetch((const char *)(DEST + 128), _MM_HINT_T0);
+
         // AVX2 명령어를 사용
         __m256i data0 = _mm256_load_si256((__m256i *)(SRC));
         __m256i data1 = _mm256_load_si256((__m256i *)(SRC + 32));
@@ -119,6 +123,10 @@ __attribute__((target("avx2"))) void custom_memcpy(char *DEST, char *SRC, size_t
     // 128바이트 보다 작은 나머지를 32바이트 단위로 복사
     while (size >= 32)
     {
+        // 다음 데이터를 prefetch
+        _mm_prefetch((const char *)(SRC + 32), _MM_HINT_T0);
+        _mm_prefetch((const char *)(DEST + 32), _MM_HINT_T0);
+
         __m256i data = _mm256_load_si256((__m256i *)SRC);
         _mm256_store_si256((__m256i *)DEST, data);
 
