@@ -19,18 +19,19 @@ int alloc_SRC_and_DEST(char **SRC, char **DEST, size_t file_size)
 {
     int ret = 0;
 
-    *SRC = malloc(file_size);
+    // 32비트 정렬하여 메모리 할당
+    *SRC = aligned_alloc(32, file_size);
     if (*SRC == NULL)
     {
-        perror("malloc error(SRC)");
+        perror("memmory allocation error(SRC)");
         ret = -1;
         return ret;
     }
 
-    *DEST = malloc(file_size);
+    *DEST = aligned_alloc(32, file_size);
     if (*DEST == NULL)
     {
-        perror("malloc error(DEST)");
+        perror("memmory allocation error(DEST)");
         free(*SRC); // SRC는 이미 할당된 상태이므로 이를 해제해줌
         ret = -1;
         return ret;
